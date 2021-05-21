@@ -18,13 +18,12 @@ class NN():
 
 
 class CardRecognizer():
-    def __init__(self, network, max_num_of_cards = 5):
+    def __init__(self, network ):
         self.window_name = 'Real-time card detection'
         cv.namedWindow(self.window_name, cv.WINDOW_NORMAL)
         cv.resizeWindow(self.window_name, 800, 600)
         self.card_collection = []
         self.max_card_history_length = 10
-        self.max_num_of_cards = max_num_of_cards
         self.network = network
         self.classes_file = "coco.names"
         self.classes = None
@@ -40,7 +39,9 @@ class CardRecognizer():
             blob = cv.dnn.blobFromImage(frame, 1/255, (input_width, input_height), [0,0,0], 1, crop=False)
             self.network.net.setInput(blob)
             outs = network.net.forward(self.getLayerNames(network.net))
-            return self.processOutput(frame, outs), self.card_collection
+            frame, collection = self.processOutput(frame, outs), self.card_collection
+            cv.imshow(self.window_name, frame)
+            return frame, collection
 
     def drawBoundingBox(self, frame, classId, conf, left, top, right, bottom):
         
@@ -66,7 +67,7 @@ class CardRecognizer():
         boxes = []
         for out in outs:
             for detection in out:
-                scores = detection[self.max_num_of_cards:]
+                scores = detection[5:] #WHY 5?
                 classId = np.argmax(scores)
                 confidence = scores[classId]
                 if confidence >  self.confidence_threshold:
@@ -82,21 +83,16 @@ class CardRecognizer():
                     boxes.append([left, top, width, height])
 
         found_cards = dict(Counter(sorted(list([self.classes[class_ids[i]] for i in range(len(class_ids))]))))
-        
         normalized_card_count = { k : np.ceil(v/2) for _, (k,v) in enumerate(found_cards.items())}
         self.card_collection.append(normalized_card_count)
         self.card_collection = self.card_collection[-self.max_card_history_length:]
 
 
         indices = cv.dnn.NMSBoxes(boxes, confidences,  self.confidence_threshold,  self.nms_threshold)
-        for i in indices:
-            i = i[0]
-            box = boxes[i]
-            left = box[0]
-            top = box[1]
-            width = box[2]
-            height = box[3]
-            frame = self.drawBoundingBox(frame, class_ids[i], confidences[i], left, top, left + width, top + height)
+        for (k,v) in enumerate(indices):
+            box = boxes[k]
+            left, top, width, height =  box[0], box[1], box[2], box[3]
+            frame = self.drawBoundingBox(frame, class_ids[k], confidences[k], left, top, left + width, top + height)
 
         return frame
 
@@ -105,20 +101,21 @@ class CardRecognizer():
         return [layersNames[i[0] - 1] for i in net.getUnconnectedOutLayers()]
 
    
+def main():
+
+    while True:
+        frame, card_collection = card_recognizer.lookForCards()
+        print(card_collection)
+        
+    
+
+        key = cv.waitKey(1) & 0xFF
+        if key == ord("q"):
+            cv.destroyAllWindows()
+            break
 
 network = NN(r"yolov3_testing.cfg", r"yolov3_training_last.weights")
 card_recognizer = CardRecognizer(network)
 
-
-while True:
-    frame, card_collection = card_recognizer.lookForCards()
-    print(card_collection)
-    
-    cv.imshow(card_recognizer.window_name, frame)
-
-    key = cv.waitKey(1) & 0xFF
-    if key == ord("q"):
-        cv.destroyAllWindows()
-        break
-
-
+if __name__ == '__main__':
+    main()
