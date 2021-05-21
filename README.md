@@ -1,8 +1,7 @@
 # playing-card-detection
 
-### weights file: 
+### weights and config files:  https://drive.google.com/drive/folders/1c_pz2-JtfGPeYLfx4qrkntQdf3t3Bj31
 
-#### https://drive.google.com/drive/folders/1c_pz2-JtfGPeYLfx4qrkntQdf3t3Bj31
 
 ## Made in collaboration with:
 
