@@ -91,7 +91,7 @@ class CardRecognizer():
         indices = cv.dnn.NMSBoxes(boxes, confidences,  self.confidence_threshold,  self.nms_threshold)
         for (k,v) in enumerate(indices):
             box = boxes[k]
-            left, top, width, height =  box[0], box[1], box[2], box[3]
+            left, top, width, height =  box
             frame = self.drawBoundingBox(frame, class_ids[k], confidences[k], left, top, left + width, top + height)
 
         return frame
