@@ -1,10 +1,12 @@
 # playing-card-detection
 
-### weights and config files:  https://drive.google.com/drive/folders/1c_pz2-JtfGPeYLfx4qrkntQdf3t3Bj31
+### weights and config files: https://drive.google.com/drive/folders/1bgPbzClxDVlcYeQ5IaC_Vz1ODzz1FwFy?usp=sharing
 
 
-## Made in collaboration with:
+## Made by:
 
 ### Aleksander: https://github.com/ablaszkiewicz
+
+### Maciej: https://github.com/hevgan
 
 ### Dominik: https://github.com/Dokanix

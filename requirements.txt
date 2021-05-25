@@ -1,0 +1,3 @@
+imutils
+cv2
+numpy
